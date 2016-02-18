@@ -1,5 +1,5 @@
 //
-//  SageLabMath.h
+//  buffer.h
 //  SageLabMath
 //
 // Copyright (c) 2015, 2016, Sage Bionetworks. All rights reserved.
@@ -31,16 +31,13 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-#import <UIKit/UIKit.h>
+#ifndef __PDScores__buffer__
+#define __PDScores__buffer__
 
-//! Project version number for SageLabMath.
-FOUNDATION_EXPORT double SageLabMathVersionNumber;
+#include <sys/types.h>
 
-//! Project version string for SageLabMath.
-FOUNDATION_EXPORT const unsigned char SageLabMathVersionString[];
+extern void buffer_overlap(double *out, double *in, uint64_t inSize, uint64_t framelen,
+                           uint64_t overlap);
+extern void buffer_nooverlap(double *out, double *in, uint64_t inSize, uint64_t framelen);
 
-// In this header, you should import all the public headers of your framework using statements like #import <SageLabMath/PublicHeader.h>
-#import <SageLabMath/SBLArray.h>
-
-
-
+#endif /* defined(__PDScores__buffer__) */

@@ -1,5 +1,5 @@
 //
-//  SageLabMath.h
+//  SBLLabMath.h
 //  SageLabMath
 //
 // Copyright (c) 2015, 2016, Sage Bionetworks. All rights reserved.
@@ -31,16 +31,24 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-#import <UIKit/UIKit.h>
+#import "SBLArray.h"
 
-//! Project version number for SageLabMath.
-FOUNDATION_EXPORT double SageLabMathVersionNumber;
+typedef NS_ENUM(int, SBLInterp1Method) {
+    SBLInterp1MethodLinear = 0,
+    SBLInterp1MethodSpline
+};
 
-//! Project version string for SageLabMath.
-FOUNDATION_EXPORT const unsigned char SageLabMathVersionString[];
-
-// In this header, you should import all the public headers of your framework using statements like #import <SageLabMath/PublicHeader.h>
-#import <SageLabMath/SBLArray.h>
-
-
-
+extern SBLRealArray *zeros(size_t rows, size_t columns);
+extern SBLRealArray *ones(size_t rows, size_t columns);
+extern SBLRealArray *NaN(size_t rows, size_t columns);
+extern SBLRealArray *sortrows(SBLRealArray *table, size_t column);
+extern SBLRealArray *polyfit(SBLRealArray *x, SBLRealArray *y, int order);
+extern SBLRealArray *polyval(SBLRealArray *c, SBLRealArray *x);
+extern SBLRealArray *repmat(SBLRealArray *x, size_t rowsreps, size_t colsreps);
+extern SBLRealArray *quantile(SBLRealArray *x, double p);
+extern SBLRealArray *buffer(SBLRealArray *x, size_t n, size_t p);
+extern SBLRealArray *linspace(double start, double end, size_t n);
+extern SBLRealArray *hamming(size_t windowSize);
+extern SBLRealArray *hanning(size_t windowSize);
+extern SBLComplexArray *specgram(SBLRealArray *x, size_t windowSize, double samplingRate, SBLRealArray *window, size_t overlap, SBLRealArray **freqs, SBLRealArray **times);
+extern SBLRealArray *interp1(SBLRealArray *x, SBLRealArray *v, SBLRealArray *xq, SBLInterp1Method method, double extrapolation);

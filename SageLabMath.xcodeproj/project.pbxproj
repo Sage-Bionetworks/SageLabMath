@@ -10,6 +10,14 @@
 		803237EB1C76892C00208365 /* SageLabMath.h in Headers */ = {isa = PBXBuildFile; fileRef = 803237EA1C76892C00208365 /* SageLabMath.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		803237F21C76892C00208365 /* SageLabMath.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 803237E71C76892C00208365 /* SageLabMath.framework */; };
 		803237F71C76892C00208365 /* SageLabMathTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 803237F61C76892C00208365 /* SageLabMathTests.m */; };
+		803238091C768ADB00208365 /* buffer.c in Sources */ = {isa = PBXBuildFile; fileRef = 803238011C768ADB00208365 /* buffer.c */; };
+		8032380A1C768ADB00208365 /* buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 803238021C768ADB00208365 /* buffer.h */; };
+		8032380B1C768ADB00208365 /* SBLArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 803238031C768ADB00208365 /* SBLArray.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		8032380C1C768ADB00208365 /* SBLArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 803238041C768ADB00208365 /* SBLArray.m */; };
+		8032380D1C768ADB00208365 /* SBLLabMath.h in Headers */ = {isa = PBXBuildFile; fileRef = 803238051C768ADB00208365 /* SBLLabMath.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		8032380E1C768ADB00208365 /* SBLLabMath.m in Sources */ = {isa = PBXBuildFile; fileRef = 803238061C768ADB00208365 /* SBLLabMath.m */; };
+		8032380F1C768ADB00208365 /* signalprocessing.h in Headers */ = {isa = PBXBuildFile; fileRef = 803238071C768ADB00208365 /* signalprocessing.h */; };
+		803238101C768ADB00208365 /* signalprocessing.m in Sources */ = {isa = PBXBuildFile; fileRef = 803238081C768ADB00208365 /* signalprocessing.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,6 +37,14 @@
 		803237F11C76892C00208365 /* SageLabMathTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SageLabMathTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		803237F61C76892C00208365 /* SageLabMathTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SageLabMathTests.m; sourceTree = "<group>"; };
 		803237F81C76892C00208365 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		803238011C768ADB00208365 /* buffer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = buffer.c; sourceTree = "<group>"; };
+		803238021C768ADB00208365 /* buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = buffer.h; sourceTree = "<group>"; };
+		803238031C768ADB00208365 /* SBLArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBLArray.h; sourceTree = "<group>"; };
+		803238041C768ADB00208365 /* SBLArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBLArray.m; sourceTree = "<group>"; };
+		803238051C768ADB00208365 /* SBLLabMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBLLabMath.h; sourceTree = "<group>"; };
+		803238061C768ADB00208365 /* SBLLabMath.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBLLabMath.m; sourceTree = "<group>"; };
+		803238071C768ADB00208365 /* signalprocessing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = signalprocessing.h; sourceTree = "<group>"; };
+		803238081C768ADB00208365 /* signalprocessing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = signalprocessing.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +87,14 @@
 		803237E91C76892C00208365 /* SageLabMath */ = {
 			isa = PBXGroup;
 			children = (
+				803238011C768ADB00208365 /* buffer.c */,
+				803238021C768ADB00208365 /* buffer.h */,
+				803238031C768ADB00208365 /* SBLArray.h */,
+				803238041C768ADB00208365 /* SBLArray.m */,
+				803238051C768ADB00208365 /* SBLLabMath.h */,
+				803238061C768ADB00208365 /* SBLLabMath.m */,
+				803238071C768ADB00208365 /* signalprocessing.h */,
+				803238081C768ADB00208365 /* signalprocessing.m */,
 				803237EA1C76892C00208365 /* SageLabMath.h */,
 				803237EC1C76892C00208365 /* Info.plist */,
 			);
@@ -93,6 +117,10 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8032380F1C768ADB00208365 /* signalprocessing.h in Headers */,
+				8032380A1C768ADB00208365 /* buffer.h in Headers */,
+				8032380D1C768ADB00208365 /* SBLLabMath.h in Headers */,
+				8032380B1C768ADB00208365 /* SBLArray.h in Headers */,
 				803237EB1C76892C00208365 /* SageLabMath.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -193,6 +221,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				803238101C768ADB00208365 /* signalprocessing.m in Sources */,
+				803238091C768ADB00208365 /* buffer.c in Sources */,
+				8032380C1C768ADB00208365 /* SBLArray.m in Sources */,
+				8032380E1C768ADB00208365 /* SBLLabMath.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

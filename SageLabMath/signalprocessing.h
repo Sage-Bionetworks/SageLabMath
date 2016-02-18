@@ -1,5 +1,5 @@
 //
-//  SageLabMath.h
+//  signalprocessing.h
 //  SageLabMath
 //
 // Copyright (c) 2015, 2016, Sage Bionetworks. All rights reserved.
@@ -31,16 +31,15 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-#import <UIKit/UIKit.h>
+#ifndef __SIGNALPROCESSING__
+#define __SIGNALPROCESSING__
 
-//! Project version number for SageLabMath.
-FOUNDATION_EXPORT double SageLabMathVersionNumber;
+#include <Accelerate/Accelerate.h>
 
-//! Project version string for SageLabMath.
-FOUNDATION_EXPORT const unsigned char SageLabMathVersionString[];
+void sp_hanning(double *outBuf, unsigned long windowSize);
+void sp_hamming(double *outBuf, unsigned long windowSize);
+void spectrogram(DOUBLE_COMPLEX *outFourierTransform, double *outFrequencies, double *outTimes, double *inSignal, unsigned long signalSize, double *window, unsigned long overlap, unsigned long windowSize, double samplingRate);
 
-// In this header, you should import all the public headers of your framework using statements like #import <SageLabMath/PublicHeader.h>
-#import <SageLabMath/SBLArray.h>
+void fft(const double *inSignal, size_t signalLength, DOUBLE_COMPLEX *outDFT);
 
-
-
+#endif

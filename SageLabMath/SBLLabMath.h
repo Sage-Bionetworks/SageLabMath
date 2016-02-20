@@ -41,6 +41,8 @@ typedef NS_ENUM(int, SBLInterp1Method) {
 extern SBLRealArray *zeros(size_t rows, size_t columns);
 extern SBLRealArray *ones(size_t rows, size_t columns);
 extern SBLRealArray *NaN(size_t rows, size_t columns);
+extern SBLIntArray *zerosInt(size_t rows, size_t columns);
+extern SBLIntArray *onesInt(size_t rows, size_t columns);
 extern SBLRealArray *sortrows(SBLRealArray *table, size_t column);
 extern SBLRealArray *polyfit(SBLRealArray *x, SBLRealArray *y, int order);
 extern SBLRealArray *polyval(SBLRealArray *c, SBLRealArray *x);
@@ -52,3 +54,4 @@ extern SBLRealArray *hamming(size_t windowSize);
 extern SBLRealArray *hanning(size_t windowSize);
 extern SBLComplexArray *specgram(SBLRealArray *x, size_t windowSize, double samplingRate, SBLRealArray *window, size_t overlap, SBLRealArray **freqs, SBLRealArray **times);
 extern SBLRealArray *interp1(SBLRealArray *x, SBLRealArray *v, SBLRealArray *xq, SBLInterp1Method method, double extrapolation);
+extern void findpeaks(SBLRealArray **pks, SBLIntArray **locs, SBLRealArray *X, double Ph);

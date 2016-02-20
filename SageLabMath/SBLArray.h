@@ -45,6 +45,8 @@ typedef double (^applyRealArrayBlock)(const double element, const double otherAr
 typedef size_t (^applyRealArrayIntBlock)(const double element, const double otherArrayElement);
 typedef double (^applyIntArrayRealBlock)(const double element, const size_t otherArrayElement);
 
+typedef ssize_t (^applyIntBlock)(const ssize_t element);
+
 @interface SBLArray : NSObject
 
 @property (nonatomic, assign) size_t rows;
@@ -56,6 +58,10 @@ typedef double (^applyIntArrayRealBlock)(const double element, const size_t othe
 - (BOOL)setRows:(size_t)rows columns:(size_t)columns;
 
 - (BOOL)isVector;
+
+- (BOOL)isempty;
+
+- (size_t)length;
 
 // all arrays must be of the same SBLXxxArray subclass, and must have cols == 1
 - (BOOL)concatenateColumnVectors:(NSArray *)arrays;
@@ -86,6 +92,8 @@ typedef double (^applyIntArrayRealBlock)(const double element, const size_t othe
 
 // internal method used by find--overridden by subclasses
 - (BOOL)isZero:(void *)valPtr;
+
++ (instancetype)zerosInRows:(size_t)rows columns:(size_t)columns;
 
 @end
 
@@ -145,15 +153,21 @@ typedef double (^applyIntArrayRealBlock)(const double element, const size_t othe
 - (SBLRealArray *)divideRows:(NSRange)rows byRow:(size_t)row ofRealArray:(SBLRealArray *)denominators;
 - (SBLRealArray *)under:(double)numerator;
 - (SBLRealArray *)add:(double)addend;
+- (SBLRealArray *)addArray:(SBLRealArray *)array;
 - (SBLRealArray *)subtract:(double)subtrahend;
 - (SBLRealArray *)subtractFrom:(double)minuend;
+- (SBLRealArray *)std;
+- (SBLIntArray *)isnan;
+- (SBLRealArray *)sign;
 
 @end
 
 @interface SBLIntArray : SBLArray
 
-@property (nonatomic, assign) size_t *data;
+@property (nonatomic, assign) ssize_t *data;
 
-+ (SBLIntArray *)rowVectorFrom:(size_t)start to:(size_t)end;
++ (SBLIntArray *)rowVectorFrom:(ssize_t)start to:(ssize_t)end;
+- (SBLIntArray *)all;
+- (SBLIntArray *)add:(ssize_t)addend;
 
 @end

@@ -144,6 +144,19 @@
     return _rows == 1 || _cols == 1;
 }
 
+- (BOOL)isempty
+{
+    return _rows == 0 || _cols == 0;
+}
+
+- (size_t)length
+{
+    if (self.isempty) {
+        return 0;
+    }
+    return MAX(_rows, _cols);
+}
+
 - (BOOL)concatenateColumnVectors:(NSArray *)arrays
 {
     if (self.cols > 1) {
@@ -236,12 +249,12 @@
     [subarray setRows:rowsSize columns:colsSize];
     char *pDest = (char *)subarray.data;
     
-    const size_t *pColIdxs = columns.data;
+    const ssize_t *pColIdxs = columns.data;
     size_t typeSize = self.typeSize;
-
+    
     for (size_t col = 0; col < colsSize; ++col) {
         size_t colIdx = *pColIdxs++ - 1;
-        const size_t *pRowIdxs = rows.data;
+        const ssize_t *pRowIdxs = rows.data;
         
         for (size_t row = 0; row < rowsSize; ++row) {
             size_t rowIdx = *pRowIdxs++ - 1; // because Matlab uses quaint one-based indexing
@@ -253,7 +266,6 @@
     
     return subarray;
 }
-
 
 - (void)setSubarrayRows:(NSRange)rows columns:(NSRange)columns fromArray:(SBLArray *)array
 {
@@ -293,13 +305,13 @@
         return;
     }
     
-    const size_t *pColIdxs = columns.data;
+    const ssize_t *pColIdxs = columns.data;
     size_t typeSize = self.typeSize;
     const char *pSrc = array.data;
     
     for (size_t col = 0; col < colsSize; ++col) {
         size_t colIdx = *pColIdxs++ - 1;
-        const size_t *pRowIdxs = rows.data;
+        const ssize_t *pRowIdxs = rows.data;
         
         for (size_t row = 0; row < rowsSize; ++row) {
             size_t rowIdx = *pRowIdxs++ - 1;
@@ -320,7 +332,7 @@
     [found setRows:totals columns:1];
     char *p = _data;
     char *pEnd = p + totals * typeSize;
-    size_t *pDest = found.data;
+    ssize_t *pDest = found.data;
     size_t numFound = 0;
     while (p < pEnd) {
         if (![self isZero:p]) {
@@ -343,7 +355,7 @@
     size_t typeSize = self.typeSize;
     char *p = _data;
     char *pEnd = p + totals * typeSize;
-    size_t *pDest = found.data;
+    ssize_t *pDest = found.data;
     size_t numFound = 0;
     while (p < pEnd && numFound < howMany) {
         if (![self isZero:p]) {
@@ -366,7 +378,7 @@
     size_t typeSize = self.typeSize;
     char *pEnd = _data ;
     char *p = pEnd + (totals - 1) * typeSize;
-    size_t *pDest = found.data;
+    ssize_t *pDest = found.data;
     size_t numFound = 0;
     while (p >= pEnd && numFound < howMany) {
         if (![self isZero:p]) {
@@ -390,8 +402,8 @@
     }
     [elements setRows:rows columns:cols];
     
-    const size_t *pIdx = indexArray.data;
-    const size_t *pEnd = pIdx + rows;
+    const ssize_t *pIdx = indexArray.data;
+    const ssize_t *pEnd = pIdx + rows;
     const char *source = _data;
     char *pDest = elements.data;
     size_t destStride = elements.typeSize;
@@ -425,8 +437,8 @@
     
     size_t stride = self.typeSize;
     const char *pSrc = array.data;
-    const size_t *pIdx = indexArray.data;
-    const size_t *endIdx = pIdx + indexArray.rows * indexArray.cols;
+    const ssize_t *pIdx = indexArray.data;
+    const ssize_t *endIdx = pIdx + indexArray.rows * indexArray.cols;
     const size_t mySize = _rows * _cols;
     while (pIdx < endIdx) {
         size_t index = *pIdx++ - 1;
@@ -511,6 +523,14 @@ void flipCol(char *outCol, const char *inCol, size_t rows, size_t stride)
 - (BOOL)isZero:(void *)valPtr
 {
     return YES; // must override in all subclasses
+}
+
++ (instancetype)zerosInRows:(size_t)rows columns:(size_t)columns
+{
+    SBLArray *ra = [self new];
+    [ra setRows:rows columns:columns];
+    memset(ra.data, 0, ra.allocatedSize * ra.typeSize);
+    return ra;
 }
 
 - (void)dealloc
@@ -627,7 +647,7 @@ void flipCol(char *outCol, const char *inCol, size_t rows, size_t stride)
     [applied setRows:self.rows columns:self.cols];
     double *p = self.data;
     double *pEnd = p + self.rows * self.cols;
-    size_t *pDest = applied.data;
+    ssize_t *pDest = applied.data;
     while (p < pEnd) {
         *pDest++ = block(*p++);
     }
@@ -646,7 +666,7 @@ void flipCol(char *outCol, const char *inCol, size_t rows, size_t stride)
     const double *p = self.data;
     const double *pOther = array.data;
     const double *pEnd = p + self.rows * self.cols;
-    size_t *pDest = applied.data;
+    ssize_t *pDest = applied.data;
     while (p < pEnd) {
         *pDest++ = block(*p++, *pOther++);
     }
@@ -681,7 +701,7 @@ void flipCol(char *outCol, const char *inCol, size_t rows, size_t stride)
     return roundArray;
 }
 
-double minForColumn(const double *colStart, size_t rows, size_t *index)
+double minForColumn(const double *colStart, size_t rows, ssize_t *index)
 {
     const double *p = colStart;
     const double *pEnd = p + rows;
@@ -744,7 +764,7 @@ double minForColumn(const double *colStart, size_t rows, size_t *index)
     const double *p = self.data;
     const double *pEnd = p + self.rows * self.cols;
     double *pDest = min.data;
-    size_t *pIDest = (*indices).data;
+    ssize_t *pIDest = (*indices).data;
     if (self.rows == 1) {
         // pretend it's a column vector by swapping indices
         [min setRows:1 columns:1];
@@ -763,7 +783,7 @@ double minForColumn(const double *colStart, size_t rows, size_t *index)
     return min;
 }
 
-double maxForColumn(const double *colStart, size_t rows, size_t *index)
+double maxForColumn(const double *colStart, size_t rows, ssize_t *index)
 {
     const double *p = colStart;
     const double *pEnd = p + rows;
@@ -826,7 +846,7 @@ double maxForColumn(const double *colStart, size_t rows, size_t *index)
     const double *p = self.data;
     const double *pEnd = p + self.rows * self.cols;
     double *pDest = max.data;
-    size_t *pIDest = (*indices).data;
+    ssize_t *pIDest = (*indices).data;
     if (self.rows == 1) {
         // pretend it's a column vector by swapping indices
         [max setRows:1 columns:1];
@@ -1420,6 +1440,13 @@ void doFftForColumn(DOUBLE_COMPLEX *outColStart, const double *colStart, size_t 
     }];
 }
 
+- (SBLRealArray *)addArray:(SBLRealArray *)array
+{
+    return [self applyReal:^double(const double element, const double otherArrayElement) {
+        return element + otherArrayElement;
+    } withRealArray:array];
+}
+
 - (SBLRealArray *)subtract:(double)subtrahend
 {
     return [self add:-subtrahend];
@@ -1430,6 +1457,68 @@ void doFftForColumn(DOUBLE_COMPLEX *outColStart, const double *colStart, size_t 
     return [self applyReal:^double(const double element) {
         return minuend - element;
     }];
+}
+
+- (SBLRealArray *)std
+{
+    NSAssert(self.rows == 1 || self.cols == 1, @"Standard deviation not yet implemented for multidimensional arrays");
+    SBLRealArray *stdDev = [SBLRealArray new];
+    [stdDev setRows:1 columns:1];
+    double mu = [self mean].data[0];
+    double sum = 0.0;
+    double *p = self.data;
+    NSInteger N = self.rows * self.cols;
+    double *pEnd = p + N;
+    while (p < pEnd) {
+        double var = *p++ - mu;
+        sum += var * var;
+    }
+    double variance = sum / (double)(N - 1);
+    stdDev.data[0] = sqrt(variance);
+    return stdDev;
+}
+
+- (SBLIntArray *)isnan
+{
+    SBLIntArray *result = [SBLIntArray new];
+    [result setRows:self.rows columns:self.cols];
+    ssize_t *pIsnan = result.data;
+    double *p = self.data;
+    double *pEnd = p + self.rows * self.cols;
+    while (p < pEnd) {
+        if (isnan(*p++)) {
+            *pIsnan = 1;
+        } else {
+            *pIsnan = 0;
+        }
+        ++pIsnan;
+    }
+    
+    return result;
+}
+
+- (SBLRealArray *)sign
+{
+    SBLRealArray *result = [SBLRealArray new];
+    [result setRows:self.rows columns:self.cols];
+    double *pSign = result.data;
+    double *p = self.data;
+    double *pEnd = p + self.rows * self.cols;
+    while (p < pEnd) {
+        if (*p < 0.0) {
+            *pSign = -1.0;
+        } else if (*p == 0.0) {
+            *pSign = 0.0;
+        } else if (*p > 0.0) {
+            *pSign = 1.0;
+        } else {
+            *pSign = NAN;
+        }
+        ++p;
+        ++pSign;
+    }
+    
+    return result;
 }
 
 // internal method
@@ -1446,16 +1535,16 @@ void doFftForColumn(DOUBLE_COMPLEX *outColStart, const double *colStart, size_t 
 
 @dynamic data;
 
-+ (SBLIntArray *)rowVectorFrom:(size_t)start to:(size_t)end
++ (SBLIntArray *)rowVectorFrom:(ssize_t)start to:(ssize_t)end
 {
     SBLIntArray *rowVector = [SBLIntArray new];
     size_t cols = end - start + 1;
     if (![rowVector setRows:1 columns:cols]) {
         return nil;
     }
-    size_t *p = rowVector.data;
-    size_t *pEnd = p + cols;
-    size_t value = start;
+    ssize_t *p = rowVector.data;
+    ssize_t *pEnd = p + cols;
+    ssize_t value = start;
     while (p < pEnd) {
         *p++ = value++;
     }
@@ -1463,14 +1552,68 @@ void doFftForColumn(DOUBLE_COMPLEX *outColStart, const double *colStart, size_t 
     return rowVector;
 }
 
+- (SBLIntArray *)all
+{
+    SBLIntArray *result = [SBLIntArray new];
+    if (self.rows == 0 && self.cols == 0) {
+        [result setRows:1 columns:1];
+        result.data[0] = 1;
+        return result;
+    }
+    [result setRows:1 columns:self.cols];
+    ssize_t *pAll = result.data;
+    ssize_t *p = self.data;
+    ssize_t stride = self.rows;
+    ssize_t *pNextCol = p + stride;
+    ssize_t *pEnd = p + (stride * self.cols);
+    while (p < pEnd) {
+        *pAll = 1;
+        while (p < pNextCol) {
+            if (!*p) {
+                *pAll = 0;
+                p = pNextCol;
+                break;
+            }
+        }
+        pNextCol += stride;
+        ++pAll;
+    }
+    
+    return result;
+}
+
+- (SBLIntArray *)applyInt:(applyIntBlock)block
+{
+    SBLIntArray *applied = [SBLIntArray new];
+    [applied setRows:self.rows columns:self.cols];
+    ssize_t *p = self.data;
+    ssize_t *pEnd = p + self.rows * self.cols;
+    ssize_t *pDest = applied.data;
+    while (p < pEnd) {
+        *pDest++ = block(*p++);
+    }
+    return applied;
+}
+
+
+
+- (SBLIntArray *)add:(ssize_t)addend
+{
+    return [self applyInt:^ssize_t(const ssize_t element) {
+        return element + addend;
+    }];
+}
+
+
 - (size_t)typeSize
 {
-    return sizeof(size_t);
+    return sizeof(ssize_t);
 }
 
 - (BOOL)isZero:(void *)valPtr
 {
-    return *(size_t *)valPtr == 0;
+    return *(ssize_t *)valPtr == 0;
 }
+
 
 @end

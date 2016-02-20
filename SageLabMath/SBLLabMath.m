@@ -40,10 +40,7 @@
 
 SBLRealArray *zeros(size_t rows, size_t columns)
 {
-    SBLRealArray *ra = [SBLRealArray new];
-    [ra setRows:rows columns:columns];
-    memset(ra.data, 0, ra.allocatedSize * ra.typeSize);
-    return ra;
+    return [SBLRealArray zerosInRows:rows columns:columns];
 }
 
 SBLRealArray *ones(size_t rows, size_t columns)
@@ -71,6 +68,24 @@ SBLRealArray *NaN(size_t rows, size_t columns)
     return ra;
 }
 
+SBLIntArray *zerosInt(size_t rows, size_t columns)
+{
+    return [SBLIntArray zerosInRows:rows columns:columns];
+}
+
+SBLIntArray *onesInt(size_t rows, size_t columns)
+{
+    SBLIntArray *ra = [SBLIntArray new];
+    [ra setRows:rows columns:columns];
+    ssize_t *p = ra.data;
+    ssize_t *pEnd = p + ra.rows * ra.cols;
+    while (p < pEnd) {
+        *p++ = 1.0;
+    }
+    
+    return ra;
+}
+
 SBLRealArray *sortrows(SBLRealArray *table, size_t column)
 {
     SBLRealArray *sorted = [table copy];
@@ -86,8 +101,8 @@ SBLRealArray *sortrows(SBLRealArray *table, size_t column)
         // create a permutation array of row indices--we'll sort this first, then permute the rows
         SBLIntArray *permute = [SBLIntArray new];
         [permute setRows:table.rows columns:1];
-        size_t *p = permute.data;
-        size_t *pEnd = p + permute.rows;
+        ssize_t *p = permute.data;
+        ssize_t *pEnd = p + permute.rows;
         size_t index = 0;
         while (p < pEnd) {
             *p++ = index++;
@@ -824,3 +839,100 @@ SBLRealArray *interp1X(SBLRealArray *x, SBLRealArray *v, SBLRealArray *xq, SBLIn
 //    emxFree_real_T(&y);
 }
  */
+
+void findpeaks(SBLRealArray **pks, SBLIntArray **locs, SBLRealArray *X, double Ph)
+{
+//    pks = zeros(0,1);
+//    locs = zeros(0,1);
+    *pks = zeros(0, 1);
+    *locs = zerosInt(0, 1);
+
+//    if all(isnan(X)),
+//        return,
+//    end
+    if ([[X isnan] all].data[0]) {
+        return;
+    }
+    
+//    Indx = find(X > Ph);
+    SBLIntArray *XgtPh = [X applyInt:^size_t(const double element) {
+        return element > Ph;
+    }];
+    SBLIntArray *Indx = [XgtPh find];
+    
+//    if(isempty(Indx))
+//        if coder.target('MATLAB')
+//            warning(message('signal:findpeaks:largeMinPeakHeight', 'MinPeakHeight', 'MinPeakHeight'));
+//        end
+//        return
+//    end
+    if ([Indx isempty]) {
+        return;
+    }
+//
+//    % Peaks cannot be easily solved by comparing the sample values. Instead, we
+//    % use first order difference information to identify the peak. A peak
+//    % happens when the trend change from upward to downward, i.e., a peak is
+//    % where the difference changed from a streak of positives and zeros to
+//    % negative. This means that for flat peak we'll keep only the rising
+//    % edge.
+//    trend = sign(diff(X));
+//    idx = find(trend==0); % Find flats
+//    N = length(trend);
+//    for i=length(idx):-1:1,
+//        % Back-propagate trend for flats
+//        if trend(min(idx(i)+1,N))>=0,
+//            trend(idx(i)) = 1;
+//        else
+//            trend(idx(i)) = -1; % Flat peak
+//        end
+//    end
+    SBLRealArray *trend = [[X diff] sign];
+    SBLIntArray *trendZero = [trend applyInt:^size_t(const double element) {
+        return element == 0;
+    }];
+    SBLIntArray *idx = [trendZero find];
+    size_t N = [trend length];
+    for (NSInteger i = [idx length] - 1; i >= 0; --i) {
+        size_t index = MIN(idx.data[i], N);
+        if (trend.data[index - 1] >= 0) {
+            trend.data[idx.data[i] - 1] = 1;
+        } else {
+            trend.data[idx.data[i] - 1] = -1;
+        }
+    }
+//    
+//    idxp = find(diff(trend)==-2)+1;  % Get all the peaks
+//    if ~isempty(idxp)
+//        locs = intersect(Indx,idxp(:));      % Keep peaks above MinPeakHeight
+//        pks  = X(locs);
+//    end
+    SBLIntArray *trendDiffTwo = [[trend diff] applyInt:^size_t(const double element) {
+        return element == -2;
+    }];
+    SBLIntArray *idxp = [[trendDiffTwo find] add:1];
+    if (![idxp isempty]) {
+        // Intersect: since we know both source arrays will be linear and monotonically increasing...
+        ssize_t *pIndx = Indx.data;
+        ssize_t *pIndxEnd = pIndx + (Indx.rows * Indx.cols);
+        ssize_t *pidxp = idxp.data;
+        ssize_t *pidxpEnd = pidxp + (idxp.rows * idxp.cols);
+        *locs = [SBLIntArray new];
+        [*locs setRows:MAX(Indx.rows, idxp.rows) columns:1];
+        ssize_t *pLocs = (*locs).data;
+        while (pIndx < pIndxEnd && pidxp < pidxpEnd) {
+            if (*pIndx == *pidxp) {
+                *pLocs++ = *pidxp++;
+                ++pIndx;
+            } else if (*pIndx > *pidxp) {
+                ++pidxp;
+            } else { // *pIndx < *pidxp
+                ++pIndx;
+            }
+        }
+        [*locs setRows:pLocs - (*locs).data columns:1];
+        
+        SBLIntArray *colInd = onesInt(1, 1);
+        *pks = [X subarrayWithRowIndices:*locs columnIndices:colInd];
+    }
+}

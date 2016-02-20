@@ -41,6 +41,7 @@ FOUNDATION_EXPORT const unsigned char SageLabMathVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <SageLabMath/PublicHeader.h>
 #import <SageLabMath/SBLArray.h>
+#import <SageLabMath/SBLLabMath.h>
 
 
 
